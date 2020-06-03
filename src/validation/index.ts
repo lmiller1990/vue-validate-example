@@ -1,7 +1,7 @@
 /**
- *  import { length, email, v-input } from 'vue-validation'
+ *  import { length, email } from 'vue-validation'
  *
- * <v-input @change="change" v-model="email" :validation="validations" />
+ * <input change="change" v-model="email" :validation="validations" />
  *
  * interface Meta {
  *   valid: boolean
@@ -46,7 +46,6 @@ export const hasLength = (constraints: LengthConstraints): LengthRule => ({
       }
     }
 
-
     return {
       valid: true
     }
@@ -71,3 +70,49 @@ export function validate(value: string, rules: Rule[]): Status {
   }
 }
 
+interface FormInput {
+  name: string
+  value: string
+  rules: Rule[]
+}
+
+export function useForm(inputs: FormInput[]) {
+  const form = {
+    valid: ref(true),
+    // username: {
+    //   value: username,
+    //   error: usernameError
+    // }
+  }
+
+  const errors: Record<string, any> = {}
+
+  for (const input of inputs) {
+    errors[input.name] = null
+    form[input.name] = {
+      value: ref(input.value),
+      error: ref()
+    }
+
+    watch(form[input.name].value, (val) => {
+      const v = validate(val, input.rules)
+      if (!v.valid) {
+        form[input.name].error.value = v.message
+        errorBag[input.name] = true
+      } else {
+        form[input.name].error.value = undefined
+        errorBag[input.name] = false
+      }
+    })
+  }
+
+  const errorBag = reactive(errors)
+
+  watch(errorBag, val => {
+    form.valid.value = !(Object.values(val).every(val => val))
+  })
+
+  return {
+    form
+  }
+}
