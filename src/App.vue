@@ -1,11 +1,23 @@
 <template>
-  <div>Vue app</div>
+  <Alert :show="show" />
+  <button @click="toggle">Toggle</button>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
+import Alert from './Alert.vue'
 
 export default defineComponent({
-  name: 'App'
+  name: 'App',
+  components: {
+    Alert
+  },
+  setup() {
+    const show = ref(false)
+    return {
+      show,
+      toggle: () => show.value = !show.value
+    }
+  }
 })
 </script>
