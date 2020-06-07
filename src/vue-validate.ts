@@ -41,7 +41,6 @@ export const useForm = (fields: FormField[]) => {
   }
 
   watch(errors, val => {
-    console.log('Update')
     form.valid.value = Object.values(val).every(valid => valid)
   })
 
